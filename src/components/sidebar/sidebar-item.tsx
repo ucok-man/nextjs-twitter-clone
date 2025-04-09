@@ -5,13 +5,15 @@ import { IconType } from "react-icons";
 type Props = {
   label: string;
   icon: IconType;
-  href?: string;
   onClick?: () => void;
 };
 
 export default function SidebarItem(props: Props) {
   return (
-    <div className="flex flex-row items-center text-white w-full">
+    <div
+      onClick={props.onClick}
+      className="flex flex-row items-center text-white w-full"
+    >
       <div className="flex relative rounded-full gap-4 p-4 hover:bg-slate-300 hover:bg-opacity-10 cursor-pointer items-center w-full">
         <props.icon size={24} />
         <p className="hidden lg:block text-lg">{props.label}</p>

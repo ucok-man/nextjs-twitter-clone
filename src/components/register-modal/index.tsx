@@ -6,23 +6,24 @@ import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { signIn } from "next-auth/react";
 import { ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 import Button from "../button";
 import Input from "../input";
 import Modal from "../modal";
 
 const formschema = z.object({
-  name: z
+  username: z
     .string()
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be at most 20 characters")
     .regex(
       /^[a-zA-Z0-9_]+$/,
       "Username can only contain letters, numbers, and underscores"
-    )
-    .optional(),
+    ),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
@@ -54,30 +55,33 @@ export default function RegisterModal({ children }: Props) {
       if (err.status === 422) {
         const response = err.response?.data as any;
         for (const key in response.error) {
-          form.setError(key as any, {
-            message: response.error[key],
-          });
+          toast.error(`${response.error[key]}`);
+          return;
         }
-        return;
       }
 
-      throw err;
+      toast.error("Sorry, our server encounter some problem. Try again later!");
     },
 
     onSuccess: async () => {
-      //   await signIn("credentials", {
-      //     ...form.getValues(),
-      //     redirectTo: "/profiles",
-      //   });
+      const result = await signIn("credentials", {
+        redirect: false,
+        ...form.getValues(),
+      });
       form.reset();
       registerModal.close();
+      if (result?.error) {
+        loginModal.open();
+      } else {
+        toast.success("New account has been created");
+      }
     },
   });
 
   const form = useForm<z.infer<typeof formschema>>({
     resolver: zodResolver(formschema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
     },
@@ -99,7 +103,7 @@ export default function RegisterModal({ children }: Props) {
             <Input
               disabled={isPending}
               placeholder="Username"
-              {...form.register("name")}
+              {...form.register("username")}
             />
             <Input
               disabled={isPending}
@@ -108,6 +112,7 @@ export default function RegisterModal({ children }: Props) {
             />
             <Input
               disabled={isPending}
+              type="password"
               placeholder="Password"
               {...form.register("password")}
             />

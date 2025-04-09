@@ -1,8 +1,23 @@
+"use client";
+
+import useLoginModal from "@/hooks/use-login-modal";
+import { useSession } from "next-auth/react";
 import { FaFeather } from "react-icons/fa";
 
 export default function TweetButton() {
+  const { data: session } = useSession();
+  const loginModal = useLoginModal();
   return (
-    <div onClick={() => {}}>
+    <div
+      onClick={() => {
+        if (!session) {
+          loginModal.open();
+          return;
+        }
+
+        // TODO: handle tweet action
+      }}
+    >
       <div className="mt-6 lg:hidden rounded-full h-14 w-14 p-4 flex items-center justify-center bg-sky-500 hover:bg-opacity-80 transition cursor-pointer">
         <FaFeather size={24} className="text-white" />
       </div>

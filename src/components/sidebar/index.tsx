@@ -1,25 +1,68 @@
 "use client";
-import { NAVBAR_ITEMS } from "@/constants";
+import useLoginModal from "@/hooks/use-login-modal";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
+import { BsBellFill, BsHouseFill } from "react-icons/bs";
+import { FaUser } from "react-icons/fa";
 import SidebarItem from "./sidebar-item";
 import SidebarLogo from "./sidebar-logo";
 import TweetButton from "./tweet-button";
 
 export default function Sidebar() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const loginModal = useLoginModal();
+
+  const SIDEBAR_ITEMS = [
+    {
+      icon: BsHouseFill,
+      label: "Home",
+      href: "/",
+    },
+    {
+      icon: BsBellFill,
+      href: "/notifications",
+      label: "Notifications",
+      requireAuth: true,
+    },
+    {
+      icon: FaUser,
+      label: "Profile",
+      href: `/users/${session?.user}`,
+      requireAuth: true,
+    },
+  ];
+
   return (
     <div className="col-span-1 h-full pr-4 md:pr-6">
       <div className="flex flex-col items-end">
         <div className="space-y-2 lg:w-[230px]'">
           <SidebarLogo />
-          {NAVBAR_ITEMS.map((item) => (
+          {SIDEBAR_ITEMS.map((item) => (
             <SidebarItem
               key={item.href}
-              href={item.href}
               label={item.label}
               icon={item.icon}
+              onClick={() => {
+                if (item.requireAuth && !session) {
+                  loginModal.open();
+                } else {
+                  router.push(item.href);
+                }
+              }}
             />
           ))}
-          <SidebarItem onClick={() => {}} icon={BiLogOut} label="Logout" />
+          {session && (
+            <SidebarItem
+              onClick={() => {
+                signOut();
+                router.refresh();
+              }}
+              icon={BiLogOut}
+              label="Logout"
+            />
+          )}
           <TweetButton />
         </div>
       </div>

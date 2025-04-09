@@ -2,6 +2,7 @@ import LoginModal from "@/components/login-modal";
 import RegisterModal from "@/components/register-modal";
 import ContextProviders from "@/context";
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
           <LoginModal>
             <RegisterModal>{children}</RegisterModal>
           </LoginModal>
+          <Toaster />
         </body>
       </ContextProviders>
     </html>

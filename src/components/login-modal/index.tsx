@@ -3,8 +3,10 @@
 import useLoginModal from "@/hooks/use-login-modal";
 import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
 import { ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 import Button from "../button";
 import Input from "../input";
@@ -49,7 +51,20 @@ export default function LoginModal({ children }: Props) {
         </Modal.Header>
         <Modal.Body>
           <form
-            onSubmit={form.handleSubmit((payload) => {})}
+            onSubmit={form.handleSubmit(async (payload) => {
+              const result = await signIn("credentials", {
+                redirect: false,
+                ...payload,
+              });
+              if (result?.error) {
+                toast.error("Invalid email or password");
+                form.resetField("password");
+              } else {
+                toast.success(`Welcome, ${form.getValues("email")}`);
+                loginModal.close();
+                form.reset();
+              }
+            })}
             className="flex flex-col gap-4"
           >
             <Input placeholder="Email" {...form.register("email")} />
