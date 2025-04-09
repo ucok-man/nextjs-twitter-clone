@@ -1,3 +1,6 @@
+import LoginModal from "@/components/login-modal";
+import RegisterModal from "@/components/register-modal";
+import ContextProviders from "@/context";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -13,7 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` antialiased`}>{children}</body>
+      <ContextProviders>
+        <body className={`antialiased`}>
+          <LoginModal>
+            <RegisterModal>{children}</RegisterModal>
+          </LoginModal>
+        </body>
+      </ContextProviders>
     </html>
   );
 }
