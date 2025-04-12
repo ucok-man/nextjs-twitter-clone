@@ -12,18 +12,22 @@ datasource db {
 
 model User {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
   username        String?   @unique
   bio             String?
   email           String?   @unique
   emailVerified   DateTime?
   image           String?
   coverImage      String?
-  profileImage    String?
   hashedPassword  String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  followingIds    String[]  @db.ObjectId
   hasNotification Boolean   @default(false)
+
+  followingIds String[] @db.ObjectId
+  followings   User[]   @relation("FollowRelation", fields: [followingIds], references: [id])
+  followerIds  String[] @db.ObjectId
+  followers    User[]   @relation("FollowRelation", fields: [followerIds], references: [id])
 
   posts         Post[]
   comments      Comment[]

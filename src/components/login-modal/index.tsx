@@ -1,5 +1,6 @@
 "use client";
 
+import { queryclient } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,6 +64,9 @@ export default function LoginModal({ children }: Props) {
                 toast.success(`Welcome, ${form.getValues("email")}`);
                 loginModal.close();
                 form.reset();
+                queryclient.refetchQueries({
+                  queryKey: ["followbar"],
+                });
               }
             })}
             className="flex flex-col gap-4"

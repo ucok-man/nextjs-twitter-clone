@@ -6,6 +6,11 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const Schema = z.object({
+  name: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be at most 20 characters"),
+
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
@@ -29,14 +34,14 @@ const Schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const { data, error } = Schema.safeParse(await req.json());
+  const { data: dto, error } = Schema.safeParse(await req.json());
   if (error) {
     return apiResponseErr(422, formatZodError(error.flatten()));
   }
 
   try {
     const usernameExist = await prismaclient.user.findFirst({
-      where: { username: data.username },
+      where: { username: dto.username },
     });
     if (usernameExist) {
       return apiResponseErr(422, {
@@ -45,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     const emailExist = await prismaclient.user.findFirst({
-      where: { email: data.email },
+      where: { email: dto.email },
     });
     if (emailExist) {
       return apiResponseErr(422, {
@@ -53,11 +58,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const hashpassword = await hash(data.password, 12);
+    const hashpassword = await hash(dto.password, 12);
     const user = await prismaclient.user.create({
       data: {
-        email: data.email,
-        username: data.username,
+        name: dto.name,
+        email: dto.email,
+        username: dto.username,
         hashedPassword: hashpassword,
         emailVerified: new Date(),
       },
@@ -65,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     return apiResponseOK(200, user);
   } catch (error) {
-    console.log({ err: error });
+    console.log(`error register user ${error}`);
     return apiResponseErr(500, { message: "We have problem in our server" });
   }
 }

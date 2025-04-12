@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { queryclient } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +17,10 @@ import Input from "../input";
 import Modal from "../modal";
 
 const formschema = z.object({
+  name: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be at most 20 characters"),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
@@ -75,6 +80,9 @@ export default function RegisterModal({ children }: Props) {
       } else {
         toast.success("New account has been created");
       }
+      queryclient.refetchQueries({
+        queryKey: ["followbar"],
+      });
     },
   });
 
@@ -100,6 +108,12 @@ export default function RegisterModal({ children }: Props) {
             onSubmit={form.handleSubmit((payload) => signUp(payload))}
             className="flex flex-col gap-4"
           >
+            <Input
+              disabled={isPending}
+              placeholder="Full Name"
+              {...form.register("name")}
+            />
+
             <Input
               disabled={isPending}
               placeholder="Username"
