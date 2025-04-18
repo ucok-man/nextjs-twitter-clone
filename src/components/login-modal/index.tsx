@@ -1,6 +1,6 @@
 "use client";
 
-import { queryclient } from "@/context";
+import { refetchNow } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +43,7 @@ export default function LoginModal({ children }: Props) {
       password: "",
     },
   });
+  const formerr = form.formState.errors;
 
   return (
     <>
@@ -64,15 +65,32 @@ export default function LoginModal({ children }: Props) {
                 toast.success(`Welcome, ${form.getValues("email")}`);
                 loginModal.close();
                 form.reset();
-                queryclient.refetchQueries({
-                  queryKey: ["followbar"],
-                });
+                refetchNow(["followbar"]);
               }
             })}
             className="flex flex-col gap-4"
           >
-            <Input placeholder="Email" {...form.register("email")} />
-            <Input placeholder="Password" {...form.register("password")} />
+            <Input
+              placeholder="Email"
+              type="email"
+              {...form.register("email")}
+            />
+            {formerr?.email && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.email.message}
+              </p>
+            )}
+
+            <Input
+              placeholder="Password"
+              type="password"
+              {...form.register("password")}
+            />
+            {formerr?.password && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.password.message}
+              </p>
+            )}
 
             <Button disabled={false} type="submit" secondary fullWidth large>
               Sign In

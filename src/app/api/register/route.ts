@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { apiResponseErr, apiResponseOK } from "@/lib/api-response";
 import { formatZodError } from "@/lib/format-zod-error";
 import { prismaclient } from "@/lib/prisma-client";
@@ -69,7 +70,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return apiResponseOK(200, user);
+    const { hashedPassword, ...rest } = user;
+
+    return apiResponseOK(200, rest);
   } catch (error) {
     console.log(`error register user ${error}`);
     return apiResponseErr(500, { message: "We have problem in our server" });

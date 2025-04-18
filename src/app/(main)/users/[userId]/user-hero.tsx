@@ -21,7 +21,7 @@ export default function UserHero({ user }: Props) {
           />
         )}
         <div className="absolute -bottom-16 left-4">
-          <Avatar userId={user.id} hasBorder isLarge />
+          <Avatar user={user} hasBorder isLarge />
         </div>
       </div>
     </section>

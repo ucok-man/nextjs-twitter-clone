@@ -9,6 +9,9 @@ export async function GET(req: NextRequest) {
       orderBy: {
         createdAt: "desc",
       },
+      omit: {
+        hashedPassword: true,
+      },
     });
     return apiResponseOK(200, users);
   } catch (error) {

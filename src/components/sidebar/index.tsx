@@ -29,7 +29,7 @@ export default function Sidebar() {
     {
       icon: FaUser,
       label: "Profile",
-      href: `/users/${session?.user}`,
+      href: `/users/${session?.user?.id}`,
       requireAuth: true,
     },
   ];

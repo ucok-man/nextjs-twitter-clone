@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { queryclient } from "@/context";
+import { refetchNow } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import useRegisterModal from "@/hooks/use-register-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +19,9 @@ import Modal from "../modal";
 const formschema = z.object({
   name: z
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be at most 20 characters"),
+    .min(3, "Name must be at least 3 characters")
+    .max(20, "Name must be at most 20 characters"),
+
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
@@ -80,9 +81,7 @@ export default function RegisterModal({ children }: Props) {
       } else {
         toast.success("New account has been created");
       }
-      queryclient.refetchQueries({
-        queryKey: ["followbar"],
-      });
+      refetchNow(["followbar"]);
     },
   });
 
@@ -94,6 +93,7 @@ export default function RegisterModal({ children }: Props) {
       password: "",
     },
   });
+  const formerr = form.formState.errors;
 
   return (
     <>
@@ -113,23 +113,45 @@ export default function RegisterModal({ children }: Props) {
               placeholder="Full Name"
               {...form.register("name")}
             />
+            {formerr?.name && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.name.message}
+              </p>
+            )}
 
             <Input
               disabled={isPending}
               placeholder="Username"
               {...form.register("username")}
             />
+            {formerr?.username && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.username.message}
+              </p>
+            )}
+
             <Input
               disabled={isPending}
               placeholder="Email"
               {...form.register("email")}
             />
+            {formerr?.email && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.email.message}
+              </p>
+            )}
+
             <Input
               disabled={isPending}
               type="password"
               placeholder="Password"
               {...form.register("password")}
             />
+            {formerr?.password && (
+              <p className="text-red-500 text-sm relative -top-3 px-1">
+                {formerr.password.message}
+              </p>
+            )}
 
             <Button
               disabled={isPending}

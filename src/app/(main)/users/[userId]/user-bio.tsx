@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/button";
+import useEditUserModal from "@/hooks/use-edit-user-modal";
 import { User } from "@prisma/client";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function UserBio({ user }: Props) {
+  const editmodal = useEditUserModal();
   const { data: current } = useSession();
 
   const createdAt = format(user.createdAt, "MMMM yyyy");
@@ -20,7 +22,7 @@ export default function UserBio({ user }: Props) {
       <div className="border-b border-neutral-800 pb-4">
         <div className="flex justify-end p-2">
           {current?.user?.id === user.id ? (
-            <Button secondary onClick={() => {}}>
+            <Button secondary onClick={() => editmodal.open()}>
               Edit
             </Button>
           ) : (

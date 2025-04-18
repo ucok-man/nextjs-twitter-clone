@@ -2,30 +2,18 @@
 
 import { cn } from "@/lib/utils";
 import { User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
-  userId: string;
+  user: User;
   isLarge?: boolean;
   hasBorder?: boolean;
 };
 
 export default function Avatar(props: Props) {
-  const { data: user, isPending } = useQuery({
-    queryKey: ["getUserById", "avatar"],
-    queryFn: async () => {
-      const { data } = await axios.get(`/api/users/${props.userId}`);
-      return data as User;
-    },
-  });
-
-  if (isPending) return null;
-
   return (
-    <Link href={`/users/${props.userId}`}>
+    <Link href={`/users/${props.user.id}`}>
       <div
         className={cn(
           "size-12 rounded-full hover:opacity-90 cursor-pointer relative",
@@ -34,7 +22,7 @@ export default function Avatar(props: Props) {
         )}
       >
         <Image
-          src={user?.image || "/images/default-profile.png"}
+          src={props.user?.image || "/images/default-profile.png"}
           alt="Avatar"
           fill
           className="object-cover rounded-full"

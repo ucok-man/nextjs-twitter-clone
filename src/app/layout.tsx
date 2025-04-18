@@ -1,3 +1,4 @@
+import UserEditModal from "@/components/edit-user-modal";
 import LoginModal from "@/components/login-modal";
 import RegisterModal from "@/components/register-modal";
 import ContextProviders from "@/context";
@@ -20,7 +21,9 @@ export default function RootLayout({
       <ContextProviders>
         <body className={`antialiased`}>
           <LoginModal>
-            <RegisterModal>{children}</RegisterModal>
+            <RegisterModal>
+              <UserEditModal>{children}</UserEditModal>
+            </RegisterModal>
           </LoginModal>
           <Toaster />
         </body>
