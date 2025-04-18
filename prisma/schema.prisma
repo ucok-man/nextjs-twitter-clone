@@ -29,7 +29,10 @@ model User {
   followerIds  String[] @db.ObjectId
   followers    User[]   @relation("FollowRelation", fields: [followerIds], references: [id])
 
-  posts         Post[]
+  likedPostIds String[] @db.ObjectId
+  likedPosts   Post[]   @relation("PostLikeRelation")
+
+  createdPosts  Post[]         @relation("PostCreatorRelation")
   comments      Comment[]
   notifications Notification[]
 }
@@ -37,13 +40,15 @@ model User {
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   body      String
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    String   @db.ObjectId
-  likedIds  String[] @db.ObjectId
-  image     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likedIds String[] @db.ObjectId
+  likes    User     @relation("PostLikeRelation", fields: [userId], references: [id])
+
+  createdBy User   @relation("PostCreatorRelation", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String @db.ObjectId
 
   comments Comment[]
 }
@@ -53,18 +58,19 @@ model Comment {
   body      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    String   @db.ObjectId
-  postId    String   @db.ObjectId
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.ObjectId
+
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String @db.ObjectId
 }
 
 model Notification {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   body      String
-  userId    String   @db.ObjectId
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.ObjectId
 }

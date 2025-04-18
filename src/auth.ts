@@ -70,7 +70,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     session({ session, token }) {
       const u = session.user as any;
-      console.log({ u });
       for (const key in token) {
         u[key] = token[key];
       }

@@ -4,12 +4,13 @@ import { ComponentProps, forwardRef } from "react";
 
 type Props = {
   label?: string;
+  containerClass?: string;
 } & Omit<ComponentProps<"textarea">, "ref">;
 
 const TextArea = forwardRef<HTMLTextAreaElement, Props>(
-  ({ id, label, className, ...props }, ref) => {
+  ({ id, label, className, containerClass, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className={cn("w-full", containerClass)}>
         {label && (
           <label htmlFor={id} className="text-xl text-white font-semibold mb-2">
             {label}

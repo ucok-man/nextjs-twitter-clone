@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { auth } from "@/auth";
 import { apiResponseErr, apiResponseOK } from "@/lib/api-response";
 import { formatZodError } from "@/lib/format-zod-error";
 import { prismaclient } from "@/lib/prisma-client";
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
 }
 
-const PUTSchema = z.object({
+const UpdateUserSchema = z.object({
   name: z
     .string()
     .min(3, "Name must be at least 3 characters")
@@ -85,14 +86,14 @@ const PUTSchema = z.object({
     .optional(),
 });
 
-export async function PUT(req: NextRequest, { params }: Params) {
-  const { data: dto, error } = PUTSchema.safeParse(await req.json());
+export const PUT = auth(async function PUT(req, ctx) {
+  const { data: dto, error } = UpdateUserSchema.safeParse(await req.json());
   if (error) {
     return apiResponseErr(422, formatZodError(error.flatten()));
   }
 
   try {
-    if (!params.userId || typeof params.userId !== "string") {
+    if (!ctx.params?.userId || typeof ctx.params?.userId !== "string") {
       return apiResponseErr(400, {
         message: "Invalid user id parameter",
       });
@@ -100,7 +101,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     const user = await prismaclient.user.findUnique({
       where: {
-        id: params.userId,
+        id: ctx.params.userId,
       },
     });
     if (!user) {
@@ -134,4 +135,4 @@ export async function PUT(req: NextRequest, { params }: Params) {
       message: "Sorry we have problem in our server",
     });
   }
-}
+});

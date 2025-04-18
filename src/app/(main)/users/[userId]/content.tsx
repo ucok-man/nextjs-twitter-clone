@@ -1,5 +1,6 @@
 "use client";
 
+import PostFeed from "@/components/post-feed";
 import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -32,6 +33,7 @@ export default function Content({ userId }: Props) {
     <>
       <UserHero user={user} />
       <UserBio user={user} />
+      <PostFeed userId={user.id} />
     </>
   );
 }

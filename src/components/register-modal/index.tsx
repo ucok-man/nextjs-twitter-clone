@@ -81,7 +81,7 @@ export default function RegisterModal({ children }: Props) {
       } else {
         toast.success("New account has been created");
       }
-      refetchNow(["followbar"]);
+      refetchNow(["getAllUser"]);
     },
   });
 

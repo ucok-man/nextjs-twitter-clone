@@ -1,9 +1,17 @@
+import { auth } from "@/auth";
+import { apiResponseErr } from "@/lib/api-response";
 import { unlink, writeFile } from "fs/promises";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import path from "path";
 import { v4 as uuid } from "uuid";
 
-export async function POST(req: NextRequest) {
+export const POST = auth(async function POST(req) {
+  if (!req.auth) {
+    return apiResponseErr(401, {
+      message: "You are not allowed to access this resource",
+    });
+  }
+
   try {
     const { image } = await req.json();
 
@@ -35,9 +43,15 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = auth(async function DELETE(req) {
+  if (!req.auth) {
+    return apiResponseErr(401, {
+      message: "You are not allowed to access this resource",
+    });
+  }
+
   try {
     const { imagePath } = await req.json();
 
@@ -67,4 +81,4 @@ export async function DELETE(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
