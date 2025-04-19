@@ -96,6 +96,22 @@ export const PATCH = auth(async function PATCH(req, ctx) {
         },
       });
 
+      await prismaclient.notification.create({
+        data: {
+          body: "Someone is following you!",
+          userId: updateFollowUser.id,
+        },
+      });
+
+      await prismaclient.user.update({
+        where: {
+          id: updateFollowUser.id,
+        },
+        data: {
+          hasNotification: true,
+        },
+      });
+
       const updateCurrentUser = await prismaclient.user.update({
         where: {
           id: currentUser.id,

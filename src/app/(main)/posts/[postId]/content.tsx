@@ -38,7 +38,7 @@ export default function Content({ postId }: Props) {
   }
 
   return (
-    <div>
+    <div className="h-full">
       <PostCard post={post} />
       <CommentForm postId={postId} />
       <CommentFeed comments={post.comments} />

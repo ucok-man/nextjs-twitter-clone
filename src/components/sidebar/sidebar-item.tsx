@@ -1,11 +1,13 @@
 "use client";
 
 import { IconType } from "react-icons";
+import { BsDot } from "react-icons/bs";
 
 type Props = {
   label: string;
   icon: IconType;
   onClick?: () => void;
+  hasNotification?: boolean;
 };
 
 export default function SidebarItem(props: Props) {
@@ -17,7 +19,9 @@ export default function SidebarItem(props: Props) {
       <div className="flex relative rounded-full gap-4 p-4 hover:bg-slate-300 hover:bg-opacity-10 cursor-pointer items-center w-full">
         <props.icon size={24} />
         <p className="hidden lg:block text-lg">{props.label}</p>
-        {/* <BsDot className="text-sky-500 absolute -top-4 left-0" size={70} /> */}
+        {props.hasNotification && (
+          <BsDot className="text-sky-500 absolute -top-4 left-0" size={70} />
+        )}
       </div>
     </div>
   );

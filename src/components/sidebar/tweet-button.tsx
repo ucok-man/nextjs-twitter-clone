@@ -2,11 +2,13 @@
 
 import useLoginModal from "@/hooks/use-login-modal";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { FaFeather } from "react-icons/fa";
 
 export default function TweetButton() {
   const { data: session } = useSession();
   const loginModal = useLoginModal();
+  const router = useRouter();
   return (
     <div
       onClick={() => {
@@ -16,6 +18,7 @@ export default function TweetButton() {
         }
 
         // TODO: handle tweet action
+        router.push("/");
       }}
     >
       <div className="mt-6 lg:hidden rounded-full h-14 w-14 p-4 flex items-center justify-center bg-sky-500 hover:bg-opacity-80 transition cursor-pointer">

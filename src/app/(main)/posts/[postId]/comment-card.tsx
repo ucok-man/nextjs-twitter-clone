@@ -39,7 +39,7 @@ export default function CommentCard({ comment }: Props) {
               @{comment.user.username}
             </span>
             <span className="text-neutral-500 text-sm">
-              {formatDistanceToNowStrict(new Date(comment.createdAt))}
+              {formatDistanceToNowStrict(new Date(comment.createdAt))} ago
             </span>
           </div>
           <div className="text-white mt-1">{comment.body}</div>

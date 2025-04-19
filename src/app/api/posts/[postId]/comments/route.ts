@@ -41,6 +41,34 @@ export const POST = auth(async function POST(req, ctx) {
       );
     }
 
+    const post = await prismaclient.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+    if (!post) {
+      return apiResponseErr(
+        404,
+        "The resource you are looking for cannot be found"
+      );
+    }
+
+    await prismaclient.notification.create({
+      data: {
+        body: "Someone replied on your tweet!",
+        userId: post.userId,
+      },
+    });
+
+    const updatedUserNotification = await prismaclient.user.update({
+      where: {
+        id: post.userId,
+      },
+      data: {
+        hasNotification: true,
+      },
+    });
+
     const comment = await prismaclient.comment.create({
       data: {
         body: dto.body,
@@ -49,7 +77,13 @@ export const POST = auth(async function POST(req, ctx) {
       },
     });
 
-    return apiResponseOK(201, comment);
+    return apiResponseOK(201, {
+      comment: comment,
+      currentUser:
+        updatedUserNotification.id === currentUser.id
+          ? updatedUserNotification
+          : null,
+    });
   } catch (error) {
     console.log(`error create comment: ${error}`);
     return apiResponseErr(500, { message: "We have problem in our server" });

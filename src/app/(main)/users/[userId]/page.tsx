@@ -7,9 +7,9 @@ type Props = {
 
 export default function UserProfilePage({ params }: Props) {
   return (
-    <>
+    <div className="grow h-full">
       <Header showBackArrow>User Profile</Header>
       <Content userId={params.userId} />
-    </>
+    </div>
   );
 }

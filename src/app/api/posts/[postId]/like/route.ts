@@ -94,6 +94,22 @@ export const PATCH = auth(async function PATCH(req, ctx) {
         },
       });
 
+      await prismaclient.notification.create({
+        data: {
+          body: "Someone liked your tweet!",
+          userId: post.userId,
+        },
+      });
+
+      await prismaclient.user.update({
+        where: {
+          id: post.userId,
+        },
+        data: {
+          hasNotification: true,
+        },
+      });
+
       const updatedCurrentUser = await prismaclient.user.update({
         where: {
           id: currentUser.id,

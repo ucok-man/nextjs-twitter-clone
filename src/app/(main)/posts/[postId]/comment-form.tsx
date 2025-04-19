@@ -7,7 +7,7 @@ import { refetchNow } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import { Comment, User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function CommentForm({ postId }: Props) {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const loginModal = useLoginModal();
 
   const [showUnderline, setShowUnderline] = useState(false);
@@ -37,16 +37,21 @@ export default function CommentForm({ postId }: Props) {
         `/api/posts/${postId}/comments`,
         payload
       );
-      return data;
+      return data as { comment: Comment; currentUser?: User };
     },
     onError: (err: AxiosError) => {
       if (err.status! >= 400) {
         toast.error("Sorry we have problem in our server");
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       form.reset();
       refetchNow(["getAllPost", "getAllMyPost", "getPostById"]);
+      if (data.currentUser) {
+        updateSession({
+          user: data.currentUser,
+        });
+      }
     },
   });
 

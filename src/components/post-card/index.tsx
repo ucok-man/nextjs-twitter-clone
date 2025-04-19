@@ -74,7 +74,7 @@ export default function PostCard({ post }: Props) {
               @{post.createdBy.username}
             </span>
             <span className="text-neutral-500 text-sm">
-              {formatDistanceToNowStrict(new Date(post.createdAt))}
+              {formatDistanceToNowStrict(new Date(post.createdAt))} ago
             </span>
           </div>
           <div className="text-white mt-1">{post.body}</div>

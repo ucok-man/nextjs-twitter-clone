@@ -25,6 +25,7 @@ export default function Sidebar() {
       href: "/notifications",
       label: "Notifications",
       requireAuth: true,
+      hasNotification: session?.user?.hasNotification,
     },
     {
       icon: FaUser,
@@ -44,6 +45,7 @@ export default function Sidebar() {
               key={item.href}
               label={item.label}
               icon={item.icon}
+              hasNotification={item.hasNotification}
               onClick={() => {
                 if (item.requireAuth && !session) {
                   loginModal.open();
