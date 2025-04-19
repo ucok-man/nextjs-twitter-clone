@@ -1,8 +1,12 @@
 "use client";
 
 import Button from "@/components/button";
+import { refetchNow } from "@/context";
 import useEditUserModal from "@/hooks/use-edit-user-modal";
+import useLoginModal from "@/hooks/use-login-modal";
 import { User } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { BiCalendar } from "react-icons/bi";
@@ -12,10 +16,24 @@ type Props = {
 };
 
 export default function UserBio({ user }: Props) {
+  const loginModal = useLoginModal();
   const editmodal = useEditUserModal();
-  const { data: current } = useSession();
+  const { data: current, update: updateSession } = useSession();
 
   const createdAt = format(user.createdAt, "MMMM yyyy");
+
+  const { mutate: toogleFollow } = useMutation({
+    mutationFn: async () => {
+      const { data } = await axios.patch(`/api/users/${user.id}/follow`);
+      return data as { message: string; followUser: User; currentUser: User };
+    },
+    onSuccess: (data) => {
+      updateSession({
+        user: data.currentUser,
+      });
+      refetchNow(["getUserById"]);
+    },
+  });
 
   return (
     <section>
@@ -26,8 +44,20 @@ export default function UserBio({ user }: Props) {
               Edit
             </Button>
           ) : (
-            <Button secondary onClick={() => {}}>
-              Follow
+            <Button
+              secondary
+              onClick={() => {
+                if (!current?.user) {
+                  loginModal.open();
+                  return;
+                }
+
+                toogleFollow();
+              }}
+            >
+              {current?.user?.followingIds.includes(user.id)
+                ? "Unfollow"
+                : "Follow"}
             </Button>
           )}
         </div>

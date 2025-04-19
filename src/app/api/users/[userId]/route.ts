@@ -25,13 +25,7 @@ export async function GET(req: NextRequest, { params }: Params) {
       omit: {
         hashedPassword: true,
       },
-      include: {
-        _count: {
-          select: {
-            followings: true,
-          },
-        },
-      },
+      include: {},
     });
     if (!user) {
       return apiResponseErr(404, {

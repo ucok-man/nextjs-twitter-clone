@@ -30,7 +30,7 @@ model User {
   followers    User[]   @relation("FollowRelation", fields: [followerIds], references: [id])
 
   likedPostIds String[] @db.ObjectId
-  likedPosts   Post[]   @relation("PostLikeRelation")
+  likedPosts   Post[]   @relation("PostLikeRelation", fields: [likedPostIds], references: [id])
 
   createdPosts  Post[]         @relation("PostCreatorRelation")
   comments      Comment[]
@@ -45,7 +45,7 @@ model Post {
   updatedAt DateTime @updatedAt
 
   likedIds String[] @db.ObjectId
-  likes    User     @relation("PostLikeRelation", fields: [userId], references: [id])
+  likes    User[]   @relation("PostLikeRelation", fields: [likedIds], references: [id])
 
   createdBy User   @relation("PostCreatorRelation", fields: [userId], references: [id], onDelete: Cascade)
   userId    String @db.ObjectId

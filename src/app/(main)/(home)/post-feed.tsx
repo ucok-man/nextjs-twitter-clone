@@ -1,27 +1,19 @@
 "use client";
 
+import PostCard from "@/components/post-card";
 import { PostWithUserComment } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import PostCard from "../post-card";
 
-type Props = {
-  userId?: string;
-};
-
-export default function PostFeed(props: Props) {
+export default function PostFeed() {
   const { data: posts } = useQuery({
     queryKey: ["getAllPost"],
     queryFn: async () => {
-      const url = props.userId
-        ? `/api/posts/users/${props.userId}`
-        : "/api/posts";
+      const url = "/api/posts";
       const { data } = await axios.get<PostWithUserComment[]>(url);
       return data;
     },
   });
-
-  console.log({ posts });
 
   return (
     <div>

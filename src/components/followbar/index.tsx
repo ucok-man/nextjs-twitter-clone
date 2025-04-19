@@ -24,6 +24,13 @@ export default function FollowBar() {
         <h2 className="text-white text-xl font-semibold">Who to follow</h2>
         <div className="flex flex-col gap-6 mt-4">
           {users?.map((user, idx) => {
+            // if (
+            //   user.id === session?.user?.id ||
+            //   session?.user?.followingIds.includes(user.id)
+            // ) {
+            //   return null;
+            // }
+
             if (user.id === session?.user?.id) {
               return null;
             }

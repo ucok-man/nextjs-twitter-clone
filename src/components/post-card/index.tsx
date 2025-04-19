@@ -1,13 +1,16 @@
 "use client";
 
+import { refetchNow } from "@/context";
 import useLoginModal from "@/hooks/use-login-modal";
 import { PostWithUserComment } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { Post, User } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
+import toast from "react-hot-toast";
+import { AiFillHeart, AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
 import Avatar from "../avatar";
 
 type Props = {
@@ -16,12 +19,24 @@ type Props = {
 
 export default function PostCard({ post }: Props) {
   const loginModal = useLoginModal();
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const router = useRouter();
 
   const { mutate: toogleLike } = useMutation({
-    mutationFn: async (payload: { postId: string; likedId: string }) => {
-      return {};
+    mutationFn: async () => {
+      const { data } = await axios.patch(`/api/posts/${post.id}/like`);
+      return data as { message: string; currentUser: User; post: Post };
+    },
+
+    onSuccess: (data) => {
+      updateSession({
+        user: data.currentUser,
+      });
+      refetchNow(["getAllPost", "getAllMyPost", "getPostById"]);
+    },
+
+    onError: () => {
+      toast.error("Sorry we have problem in our server");
     },
   });
 
@@ -42,7 +57,7 @@ export default function PostCard({ post }: Props) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                router.push(`/users/${post.userId}}`);
+                router.push(`/users/${post.userId}`);
               }}
               className="text-white font-semibold cursor-pointer hover:underline"
             >
@@ -52,7 +67,7 @@ export default function PostCard({ post }: Props) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                router.push(`/users/${post.userId}}`);
+                router.push(`/users/${post.userId}`);
               }}
               className="text-neutral-500 cursor-pointer hover:underline hidden md:block"
             >
@@ -76,20 +91,15 @@ export default function PostCard({ post }: Props) {
                   loginModal.open();
                   return;
                 }
-                toogleLike({
-                  postId: post.id,
-                  likedId: session.user.id,
-                });
+                toogleLike();
               }}
               className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer transition hover:text-red-500"
             >
-              <AiOutlineHeart
-                className={cn(
-                  "transition-all",
-                  post.likedIds.length > 0 && "fill-red-500 text-red-500"
-                )}
-                size={20}
-              />
+              {post.likedIds.length <= 0 ? (
+                <AiOutlineHeart size={20} />
+              ) : (
+                <AiFillHeart className="text-red-500" size={20} />
+              )}
               <p>{post.likedIds.length}</p>
             </div>
           </div>

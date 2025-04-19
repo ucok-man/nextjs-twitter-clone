@@ -1,5 +1,5 @@
 import Header from "@/components/header";
-import PostFeed from "@/components/post-feed";
+import PostFeed from "./post-feed";
 import TweetForm from "./tweet-form";
 
 export default function HomePage() {

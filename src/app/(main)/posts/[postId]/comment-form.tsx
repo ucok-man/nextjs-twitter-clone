@@ -17,11 +17,15 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-const CreatePostSchema = z.object({
+const CreateCommentSchema = z.object({
   body: z.string().trim().min(1).max(500),
 });
 
-export default function TweetForm() {
+type Props = {
+  postId: string;
+};
+
+export default function CommentForm({ postId }: Props) {
   const { data: session } = useSession();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
@@ -29,9 +33,12 @@ export default function TweetForm() {
   const [showUnderline, setShowUnderline] = useState(false);
   const [disableTweet, setDisableTweet] = useState(true);
 
-  const { mutate: createPost, isPending: createPending } = useMutation({
-    mutationFn: async (payload: z.infer<typeof CreatePostSchema>) => {
-      const { data } = await axios.post("/api/posts", payload);
+  const { mutate: createComment, isPending: createPending } = useMutation({
+    mutationFn: async (payload: z.infer<typeof CreateCommentSchema>) => {
+      const { data } = await axios.post(
+        `/api/posts${postId}/comments`,
+        payload
+      );
       return data;
     },
     onError: (err: AxiosError) => {
@@ -46,8 +53,8 @@ export default function TweetForm() {
     },
   });
 
-  const form = useForm<z.infer<typeof CreatePostSchema>>({
-    resolver: zodResolver(CreatePostSchema),
+  const form = useForm<z.infer<typeof CreateCommentSchema>>({
+    resolver: zodResolver(CreateCommentSchema),
     defaultValues: {
       body: "",
     },
@@ -61,12 +68,12 @@ export default function TweetForm() {
             <Avatar user={session.user as User} />
           </div>
           <form
-            onSubmit={form.handleSubmit((payload) => createPost(payload))}
+            onSubmit={form.handleSubmit((payload) => createComment(payload))}
             className="w-full"
           >
             <TextArea
               disabled={createPending}
-              placeholder="What's happening?"
+              placeholder="Tweet your reply"
               className="text-[18px] border-none"
               rows={1}
               containerClass="peer"
