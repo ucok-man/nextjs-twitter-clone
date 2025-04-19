@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
+import CommentFeed from "./comment-feed";
 import CommentForm from "./comment-form";
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 
 export default function Content({ postId }: Props) {
   const { data: post, isPending } = useQuery({
-    queryKey: ["getPostById"],
+    queryKey: ["getPostById", postId],
     queryFn: async () => {
       const { data } = await axios.get<
         Post & { createdBy: User; comments: (Comment & { user: User })[] }
@@ -40,6 +41,7 @@ export default function Content({ postId }: Props) {
     <div>
       <PostCard post={post} />
       <CommentForm postId={postId} />
+      <CommentFeed comments={post.comments} />
     </div>
   );
 }

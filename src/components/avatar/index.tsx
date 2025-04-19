@@ -6,14 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
-  user: User;
+  user: User | undefined;
   isLarge?: boolean;
   hasBorder?: boolean;
 };
 
 export default function Avatar(props: Props) {
   return (
-    <Link href={`/users/${props.user.id}`}>
+    <Link href={props.user?.id ? `/users/${props.user.id}` : "#"}>
       <div
         className={cn(
           "size-12 rounded-full hover:opacity-90 cursor-pointer relative",

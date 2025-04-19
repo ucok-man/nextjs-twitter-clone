@@ -35,12 +35,12 @@ export default function TweetForm() {
       return data;
     },
     onError: (err: AxiosError) => {
-      if (err.status! >= 500) {
+      if (err.status! >= 400) {
         toast.error("Sorry we have problem in our server");
       }
     },
     onSuccess: () => {
-      toast.success("Your tweet has been posted!");
+      toast.success("Posting your tweet");
       form.reset();
       refetchNow(["getAllPost", "getAllMyPost"]);
     },

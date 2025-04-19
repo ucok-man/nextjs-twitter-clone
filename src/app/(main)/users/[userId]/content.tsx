@@ -19,7 +19,7 @@ export default function Content({ userId }: Props) {
     isPending,
     isFetching,
   } = useQuery({
-    queryKey: ["getUserById"],
+    queryKey: ["getUserById", userId],
     queryFn: async () => {
       const { data } = await axios.get(`/api/users/${userId}`);
       return data as User;

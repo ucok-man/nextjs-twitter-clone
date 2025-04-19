@@ -8,7 +8,7 @@ type Props = {
 export default function UserProfilePage({ params }: Props) {
   return (
     <>
-      <Header>User Profile</Header>
+      <Header showBackArrow>User Profile</Header>
       <Content userId={params.userId} />
     </>
   );

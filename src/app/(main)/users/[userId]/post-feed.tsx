@@ -11,7 +11,7 @@ type Props = {
 
 export default function PostFeed(props: Props) {
   const { data: posts, isPending } = useQuery({
-    queryKey: ["getAllMyPost"],
+    queryKey: ["getAllMyPost", props.userId],
     queryFn: async () => {
       const url = `/api/posts/users/${props.userId}`;
       const { data } = await axios.get<PostWithUserComment[]>(url);
